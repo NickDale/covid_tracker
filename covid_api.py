@@ -6,9 +6,11 @@ import requests
 from helper.covid_csv_data import CovidData
 from helper.response_data import JsonConverter
 
+WORLD_GEO_JSON = 'https://raw.githubusercontent.com/MinnPost/simple-map-d3/master/example-data/world-population.geo.json'
 COVID_DATA_BASE_URL = 'https://corona-api.com'
 COVID_DATA_ALL_COUNTRY = '/countries'
-COVID_DAILY_CSV = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{}.csv'
+COVID_DAILY_CSV = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data' \
+                  '/csse_covid_19_daily_reports/{}.csv '
 COUNTRY_DATA_URL = 'https://api.ipgeolocationapi.com/countries'
 TIME_OUT = 5
 
@@ -40,19 +42,9 @@ class CovidRestAPI:
             self.country_population[i['name']] = i['population']
         return JsonConverter(response_json).response_data
 
-    # def get_data_in_range(self, dayFrom, dayTo):
-
     def get_covid_data(self):
         csv_data_list = []
         for raw in self.get_latest_data().values:
-            # country = Country(raw)
-            # if country.name in self.covid_country_data:
-            #     cu = self.covid_country_data[country.name]
-            #     cu.confirmed = cu.confirmed + country.confirmed
-            #     cu.deaths = cu.confirmed + country.confirmed
-            #     cu.recovered = cu.confirmed + country.confirmed
-            #     cu.active = cu.confirmed + country.confirmed
-
             csv_data_list.append(CovidData(raw))
         return csv_data_list
 
@@ -66,24 +58,10 @@ class CovidRestAPI:
             data = cls.get_latest_data(day_delay)
         return data
 
-        # data = None
-        # response = self.get(self, COVID_DAILY_CSV.format(day.strftime("%m-%d-%Y")))
-        # if response.status_code != 200:
-        #     data = pd.read_csv(COVID_DAILY_CSV.format((day + timedelta(days=-1)).strftime("%m-%d-%Y")), header=None)
-        # else:
-        #     data = pd.read_csv(COVID_DAILY_CSV.format(day.strftime("%m-%d-%Y")), header=None)
-        # print(data)
-        # d = pd.read_csv(COVID_DAILY_CSV.format((day + timedelta(days=-1)).strftime("%m-%d-%Y")), header=None,
-        #                 delimiter=',')
-        # list_of_rows = [list(row) for row in d.values]
-        # covid_data = []
-        # for row in d.values:
-        #     covid_data.append(CovidData(row))
-        #
-        # response_json = response.json()
-        # return JsonConverter(response_json).response_data
-
     @classmethod
     def read_csv_data(cls, day, day_delay):
         return pd.read_csv(COVID_DAILY_CSV.format((day + timedelta(days=day_delay)).strftime("%m-%d-%Y")),
                            skiprows=1, header=None)
+
+    def world_population_geo_json(self):
+        return self.get(self, WORLD_GEO_JSON).json()
