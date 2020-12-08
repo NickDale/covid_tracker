@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-from main import render_new_map
+from renderer import render_new_map
 
 app = Flask(__name__)
 

@@ -10,13 +10,13 @@ def render_new_map():
     covid_rest = CovidRestAPI()
 
     covid_rest.get_covid_data()
-    data = covid_rest.get_all_countries()
-    map = folium.Map(location=[46.2833709, 20.0887508], zoom_start=7)
-    folium.TileLayer('Stamen Terrain').add_to(map)
-    folium.TileLayer('Stamen Toner').add_to(map)
-    folium.TileLayer('Stamen Water Color').add_to(map)
-    folium.TileLayer('cartodbpositron').add_to(map)
-    folium.TileLayer('cartodbdark_matter').add_to(map)
+    all_country = covid_rest.get_all_countries()
+    folium_map = folium.Map(location=[46.2833709, 20.0887508], zoom_start=7)
+    folium.TileLayer('Stamen Terrain').add_to(folium_map)
+    folium.TileLayer('Stamen Toner').add_to(folium_map)
+    folium.TileLayer('Stamen Water Color').add_to(folium_map)
+    folium.TileLayer('cartodbpositron').add_to(folium_map)
+    folium.TileLayer('cartodbdark_matter').add_to(folium_map)
 
     pickers = folium.FeatureGroup(name="pickers")
     # fg.add_child(folium.Marker(location=[38.2, -99.1], popup="TEST", icon=folium.Icon(color='green')))
@@ -25,9 +25,9 @@ def render_new_map():
     # for cords in [[38.5, -99.5],[38.5, -97.5]]:
     #     fg.add_child(folium.Marker(cords, popup="TEST_3", icon=folium.Icon(color='purple')))
 
+    covid_rest.get_covid_data_by_country('Hungary')
     popup_html = read_pop_html()
-    # covid_data = covid_rest.get_covid_data()
-    for i in data:
+    for i in all_country:
         _latitude = i.coordinates['latitude']
         _longitude = i.coordinates['longitude']
         _population = i.population
@@ -51,13 +51,13 @@ def render_new_map():
     countries_group = folium.FeatureGroup(name="countries", overlay=True)
     countries_group.add_child(folium.GeoJson(data=covid_rest.world_population_geo_json(),
                                              style_function=lambda x:
+                                             # TODO: change color
                                              {'fillColor': 'green' if float(x['properties']['POP2005']) < 10000000
                                              else 'orange' if 10000000 <= float(
                                                  x['properties']['POP2005']) < 20000000 else 'red'}
                                              ))
 
-    # fg.add_child(folium.GeoJson(data=countries_geo_json))
-    map.add_child(pickers)
-    map.add_child(countries_group)
-    map.add_child(folium.LayerControl())
-    map.save("templates/map.html")
+    folium_map.add_child(pickers)
+    folium_map.add_child(countries_group)
+    folium_map.add_child(folium.LayerControl())
+    folium_map.save("templates/map.html")

@@ -17,5 +17,8 @@ def create_popup(html, data):
     return folium.Popup(iframe, max_width=350)
 
 
+# def convert_to
+
+
 def read_pop_html():
     return open(POPUP_HTML_URL, 'r').read()

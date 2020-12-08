@@ -1,4 +1,4 @@
-class CovidData:
+class DailyData:
 
     def __init__(self, raw):
         self.FIPS = raw[0]
